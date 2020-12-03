@@ -17,5 +17,7 @@ int main()
 	show(vec);
 	vec.push_back(8);
 	show(vec);
+	vec.insert_aux(vec.begin(), 6);
+	show(vec);
 	return 0;
 }

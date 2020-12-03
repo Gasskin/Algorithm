@@ -59,7 +59,6 @@ protected:
 	iterator				finish;//尾元素
 	iterator				end_of_storage;//当前空间的末尾
 	//内存分配api
-	void					insert_aux(iterator position, const T& x);//插入一个元素
 	void					deallocate();//deallocate是释放空间，理解为free，而destroy只是调用析构函数
 	void					fill_initialize(size_type n, const T& value);//填充空间
 	iterator				allocate_and_fill(size_type n, const T& x)
@@ -69,17 +68,17 @@ protected:
 		return result;
 	}
 public:
-	iterator	begin()
+	iterator	begin()const
 	{
 		return start;
 	}
-	iterator	end()
+	iterator	end()const
 	{
 		return finish;
 	}
 	size_type	size()const
 	{
-		return size_type(end()-begin());
+		return (size_type)(end()-begin());
 	}
 	size_type	capacity()const
 	{
@@ -153,6 +152,8 @@ public:
 	{
 		resize(new_size, T());
 	}
+	void		insert_aux(iterator position, const T& x);//插入一个元素
+
 public:
 	MyVector():start(0),finish(0),end_of_storage(0){}
 	MyVector(size_type n, const T& value)
@@ -180,9 +181,41 @@ inline void MyVector<T>::insert_aux(iterator position, const T& x)
 	//如果空间还没满
 	if (finish != end_of_storage)
 	{
-		alloc.construct(finish, x);
+#ifdef DEBUG
+		cout << "insert_aux 当前空间未满，直接插入" << endl;
+#endif 
+		//在末端构造一个元素，它的值是vector当前的最后一个元素
+		alloc.construct(finish, *(finish-1));
 		++finish;
+		T x_copy = x;
+		copy_backward(position, finish - 2, finish - 1);//这个只是倒着拷贝，先拷贝finish-2到finish-1，然后finish-3到finish-2，直到position
+		*position = x_copy;
 	}
+	//如果空间满了，那就需要扩容，先分配一个更大的vector，然后把原始数据挪过去
+	else
+	{
+#ifdef DEBUG
+		cout << "insert_aux 当前空间已满，重新分配空间" << endl;
+#endif 
+		const size_type old_size = size();
+		const size_type len = (old_size != 0 ? 2 * old_size : 1);//如果原始内存长度是0，那这次分配为1，否则每次扩容为2倍
+		iterator new_start = alloc.allocate(len);
+		iterator new_finish = new_start;
+
+		//这一步是拷贝了[start,position)
+		new_finish = uninitialized_copy(start, position, new_start);
+		//这一步相当于插入，在finish位置构建一个x元素
+		alloc.construct(new_finish, x);
+		++new_finish;
+		//然后拷贝[position,finish)
+		new_finish = uninitialized_copy(position, finish, new_finish);
+		
+		_Destroy_range(begin(), end());
+		start = new_start;
+		finish = new_finish;
+		end_of_storage = new_start + len;
+	}
+
 }
 
 template<typename T>
