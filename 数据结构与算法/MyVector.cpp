@@ -6,18 +6,19 @@ void show(MyVector<int>& vec)
 	{
 		cout << *iter << " ";
 	}
-	cout << endl;
+	cout << endl<<endl;
 }
 
 int main()
 {
-	MyVector<int> vec(9, 9);
+	MyVector<int> vec(5);
+	for (int i = 0; i < 5; i++)
+	{
+		vec[i] = i;
+	}
 	show(vec);
-	vec.pop_back();
-	show(vec);
-	vec.push_back(8);
-	show(vec);
-	vec.insert_aux(vec.begin(), 6);
+	
+	vec.insert(vec.end()-2, 9, 0);
 	show(vec);
 	return 0;
 }
