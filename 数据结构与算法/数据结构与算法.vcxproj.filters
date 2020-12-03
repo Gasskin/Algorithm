@@ -18,10 +18,8 @@
     <ClCompile Include="MyList.h">
       <Filter>头文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="main.cpp">
+    <ClCompile Include="MyList.cpp">
       <Filter>源文件</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>
