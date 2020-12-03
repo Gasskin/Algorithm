@@ -1,57 +1,73 @@
-#pragma once
-#include<memory>
+ï»¿#include <memory>
+#include <iostream>
 using namespace std;
 
-//¶ÔÓÚÄÚ´æÅäÖÃÆ÷µÄ¼òµ¥·â×°£¬¸öÈË¸Ğ¾õ»¹ÊÇÓÃµÄÊÇallocator<int>
-template<typename T, typename Alloc>
-class simple_alloc
-{
-public:
-	static T* allocate(size_t n)
-	{
-		return 0 == n ? 0 : (T*)Alloc::allocate(n * sizeof(T));
-	}
-	static T* allocate(void)
-	{
-		return (T*)Alloc::allocate(sizeof(T));
-	}
-	static void deallocate(T* p, size_t n)
-	{
-		if (0 != n) Alloc::deallocate(p, n * sizeof(T));
-	}
-	static void deallocate(T* p)
-	{
-		Alloc::deallocate(p, sizeof(T));
-	}
-};
+//å¯¹äºå†…å­˜é…ç½®å™¨çš„ç®€å•å°è£…ï¼Œä¸ªäººæ„Ÿè§‰è¿˜æ˜¯ç”¨çš„æ˜¯allocator<int>
+//template<typename T, typename Alloc>
+//class simple_alloc
+//{
+//public:
+//	static T* allocate(size_t n)
+//	{
+//		return 0 == n ? 0 : (T*)Alloc::allocate(n * sizeof(T));
+//	}
+//	static T* allocate(void)
+//	{
+//		return (T*)Alloc::allocate(sizeof(T));
+//	}
+//	static void deallocate(T* p, size_t n)
+//	{
+//		if (0 != n) Alloc::deallocate(p, n * sizeof(T));
+//	}
+//	static void deallocate(T* p)
+//	{
+//		Alloc::deallocate(p, sizeof(T));
+//	}
+//};
+
+
+
+/*
+	vector[5]  size=5 capcacity=10
+
+    ğŸ‘‡start														ğŸ‘‡finish														ğŸ‘‡end_of_storage
+	0			1			2			3			4			5			6			7			8			9			10
+	1			2			3			4			5			nullptr		nullptr		nullptr		nullptr		nullptr		Ã—
+*/
 
 //=========================
-//ÉùÃ÷
+//å£°æ˜
 //=========================
-template<typename T,typename Alloc=std::allocator<T>>
+template<typename T>
 class MyVector
 {
 public:
-	//Ç¶Ì×ĞÍ±ğ
-	typedef T				value_type;//ÀàĞÍ
-	typedef value_type*		pointer;//Ö¸Õë
-	typedef value_type*		iterator;//µü´úÆ÷£¬¶ÔÓÚvectorÀ´Ëµ£¬µü´úÆ÷ºÍÖ¸Õë»ù±¾Ã»²î±ğ
-	typedef value_type&		reference;//ÒıÓÃ
-	typedef size_t			size_type;//Ò»°ã±íÊ¾´óĞ¡
-	typedef ptrdiff_t		difference_type;//ÓÃÓÚ´¢´æÊ×Î»µü´úÆ÷Ö®¼äµÄ¾àÀë
+	//åµŒå¥—å‹åˆ«
+	typedef T				value_type;//ç±»å‹
+	typedef value_type*		pointer;//æŒ‡é’ˆ
+	typedef value_type*		iterator;//è¿­ä»£å™¨ï¼Œå¯¹äºvectoræ¥è¯´ï¼Œè¿­ä»£å™¨å’ŒæŒ‡é’ˆåŸºæœ¬æ²¡å·®åˆ«
+	typedef value_type&		reference;//å¼•ç”¨
+	typedef size_t			size_type;//ä¸€èˆ¬è¡¨ç¤ºå¤§å°
+	typedef ptrdiff_t		difference_type;//ç”¨äºå‚¨å­˜é¦–ä½è¿­ä»£å™¨ä¹‹é—´çš„è·ç¦»
 protected:
-	//ÄÚ´æ·ÖÅäÆ÷
-	//allocator<value_type>	alloc;
-	typedef simple_alloc<value_type, Alloc>	data_allocator;
-	//µü´úÆ÷
-	iterator				start;//Ê×ÔªËØ
-	iterator				finish;//Î²ÔªËØ
-	iterator				end_of_storage;//µ±Ç°¿Õ¼äµÄÄ©Î²
-	//ÄÚ´æ·ÖÅäapi
-	void					insert_aux(iterator position, const T& x);
-	void					deallocate();//ÊÍ·Å¿Õ¼ä
-	void					fill_initialize(size_type n, const T& value);//Ìî³ä¿Õ¼ä
-	void					allocate_and_fill(size_type n, const T& x);
+	//å†…å­˜åˆ†é…å™¨
+	allocator<value_type>	alloc;
+	//typedef simple_alloc<value_type, Alloc>	data_allocator;
+
+	//è¿­ä»£å™¨
+	iterator				start;//é¦–å…ƒç´ 
+	iterator				finish;//å°¾å…ƒç´ 
+	iterator				end_of_storage;//å½“å‰ç©ºé—´çš„æœ«å°¾
+	//å†…å­˜åˆ†é…api
+	void					insert_aux(iterator position, const T& x);//æ’å…¥ä¸€ä¸ªå…ƒç´ 
+	void					deallocate();//deallocateæ˜¯é‡Šæ”¾ç©ºé—´ï¼Œç†è§£ä¸ºfreeï¼Œè€Œdestroyåªæ˜¯è°ƒç”¨ææ„å‡½æ•°
+	void					fill_initialize(size_type n, const T& value);//å¡«å……ç©ºé—´
+	iterator				allocate_and_fill(size_type n, const T& x)
+	{
+		iterator result = alloc.allocate(n);//åˆ†é…nä¸ªvalue_typeå¤§å°çš„ç©ºé—´
+		uninitialized_fill_n(result, n, x);//è°ƒç”¨xçš„æ„é€ å‡½æ•°æ¥ç”Ÿæˆxçš„å¤åˆ¶ä½“ï¼Œresultæ˜¯èµ·å§‹åœ°å€
+		return result;
+	}
 public:
 	iterator	begin()
 	{
@@ -87,9 +103,9 @@ public:
 	}		
 	void		push_back(const T& x)
 	{
-		if (finish != end_of_storage)//µ±¿Õ¼äÎ´ÂúÊ±
+		if (finish != end_of_storage)//å½“ç©ºé—´æœªæ»¡æ—¶
 		{
-			construct(finish, x);//ÆäÊµÊÇµ÷ÓÃÁË¹¹Ôìº¯Êı£¬ÔÚfinishÎ»ÖÃ¹¹ÔìÒ»¸öx
+			alloc.construct(finish, x);//å…¶å®æ˜¯è°ƒç”¨äº†æ„é€ å‡½æ•°ï¼Œåœ¨finishä½ç½®æ„é€ ä¸€ä¸ªx
 			++finish;
 		}
 		else
@@ -100,30 +116,30 @@ public:
 	void		pop_back()
 	{
 		--finish;
-		destroy(finish);
+		alloc.destroy(finish);
 	}
 	iterator	erase(iterator position)
 	{
-		//ÕâÊÇÅĞ¶ÏpositionÊÇ²»ÊÇ×îºóÒ»¸öÔªËØ,Èç¹û²»ÊÇ
+		//è¿™æ˜¯åˆ¤æ–­positionæ˜¯ä¸æ˜¯æœ€åä¸€ä¸ªå…ƒç´ ,å¦‚æœä¸æ˜¯
 		if (position + 1 != end())
 		{
 			copy(position + 1, finish, position);
 		}
-		//Èç¹ûposition¾ÍÊÇ×îºóÒ»¸öÔªËØ£¬ÄÇÆäÊµ¾ÍÊÇpop_back
+		//å¦‚æœpositionå°±æ˜¯æœ€åä¸€ä¸ªå…ƒç´ ï¼Œé‚£å…¶å®å°±æ˜¯pop_back
 		--finish;
-		destroy(finish);
-		return position;//ÎÒÃÇ·µ»ØµÄ»¹ÊÇ×î¿ªÊ¼ÄÇ¸öµü´úÆ÷£¬Ò²Òò´Ë¿ÉÄÜÔì³Éµü´úÆ÷Ê§Ğ§µÄÎÊÌâ
+		alloc.destroy(finish);
+		return position;//æˆ‘ä»¬è¿”å›çš„è¿˜æ˜¯æœ€å¼€å§‹é‚£ä¸ªè¿­ä»£å™¨ï¼Œä¹Ÿå› æ­¤å¯èƒ½é€ æˆè¿­ä»£å™¨å¤±æ•ˆçš„é—®é¢˜
 	}
 	iterator	erase(iterator first, iterator last)
 	{
 		iterator i = copy(last, finish, first);
-		destroy(i, finish);
+		_Destroy_range(i, finish);
 		finish = finish - (last - first);
 		return first;
 	}
 	void		resize(size_type new_size, const T& x)
 	{
-		//reszieÊÇÖØĞÂ·ÖÅäsize£¬capacityÊÇ²»±äµÄ£¬³ı·ÇÖØĞÂ·ÖÅäµÄ´óĞ¡³¬¹ıÁËcapacity
+		//reszieæ˜¯é‡æ–°åˆ†é…sizeï¼Œcapacityæ˜¯ä¸å˜çš„ï¼Œé™¤éé‡æ–°åˆ†é…çš„å¤§å°è¶…è¿‡äº†capacity
 		if (new_size < size())
 		{
 			erase(begin() + new_size, end());
@@ -149,41 +165,41 @@ public:
 	}
 	~MyVector()
 	{
-		destroy(start, finish);//×¢ÒâÖ»ÒªÏú»Ùfinish¸öÔªËØ
+		_Destroy_range(start, finish);//allocatorä¸­æ²¡æœ‰è¿™ä¸ªå‡½æ•°ï¼Œè¿™æ˜¯æˆ‘æƒ³ä¸åˆ°çš„
 		deallocate();
 	}
 };
 
 
 //=========================
-//ÊµÏÖ
+//å®ç°
 //=========================
-template<typename T, typename Alloc>
-inline void MyVector<T, Alloc>::insert_aux(iterator position, const T& x)
+template<typename T>
+inline void MyVector<T>::insert_aux(iterator position, const T& x)
 {
-}
-
-template<typename T, typename Alloc>
-inline void MyVector<T, Alloc>::deallocate()
-{
-	if (start)
+	//å¦‚æœç©ºé—´è¿˜æ²¡æ»¡
+	if (finish != end_of_storage)
 	{
-		data_allocator::deallocate(start, end_of_storage - start);
+		alloc.construct(finish, x);
+		++finish;
 	}
 }
 
-template<typename T, typename Alloc>
-inline void MyVector<T, Alloc>::fill_initialize(size_type n, const T& value)
+template<typename T>
+inline void MyVector<T>::deallocate()
+{
+	if (start)
+	{
+		alloc.deallocate(start, end_of_storage - start);
+	}
+}
+
+template<typename T>
+inline void MyVector<T>::fill_initialize(size_type n, const T& value)
 {
 	start = allocate_and_fill(n, value);
 	finish = start + n;
-	end_of_storage = finish;//µÚÒ»´Î¹¹ÔìµÄÊ±ºò£¬finishºÍendÊÇÒ»Ñù´óµÄ£¬²»¹ıÈç¹ûÀ©ÈİÁË£¬¿ÉÄÜ¾Í²»Ò»ÑùÁË
+	end_of_storage = finish;//ç¬¬ä¸€æ¬¡æ„é€ çš„æ—¶å€™ï¼Œfinishå’Œendæ˜¯ä¸€æ ·å¤§çš„ï¼Œä¸è¿‡å¦‚æœæ‰©å®¹äº†ï¼Œå¯èƒ½å°±ä¸ä¸€æ ·äº†
 }
 
-template<typename T, typename Alloc>
-inline void MyVector<T, Alloc>::allocate_and_fill(size_type n, const T& x)
-{
-	iterator result = data_allocator::allocate(n);//·ÖÅän¸övalue_type´óĞ¡µÄ¿Õ¼ä
-	uninitialized_fill_n(result, n, x);//µ÷ÓÃxµÄ¹¹Ôìº¯ÊıÀ´Éú³ÉxµÄ¸´ÖÆÌå£¬resultÊÇÆğÊ¼µØÖ·
-	return result;
-}
+
