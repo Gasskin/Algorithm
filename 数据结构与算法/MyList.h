@@ -21,7 +21,7 @@ struct _list_node
 //vector中的迭代器其实就是一个普通指针，因为vector本质就是数组，指针的++--已经可以满足其需求
 //但是list是双向链表，每个节点都是离散的，不储存在连续空间内，所以其迭代器必须额外设计
 //==============================
-template<class T>
+template<typename T>
 struct _list_iterator
 {
 	typedef _list_iterator<T>				self;//指向一个迭代器
@@ -40,12 +40,12 @@ struct _list_iterator
 	_list_iterator() {}
 	_list_iterator(const iterator& x) :node(x.node) {}
 
-	bool		 operator==(const self& x) const { return node == x.node; }//比较两个迭代器是否相等，只要比较所指节点是否一样
-	bool		 operator!=(const self& x) const { return node != x.node; }
+	bool		operator==(const self& x) const { return node == x.node; }//比较两个迭代器是否相等，只要比较所指节点是否一样
+	bool		operator!=(const self& x) const { return node != x.node; }
 
-	reference	 operator*() const { return (*node).data; }//ref返回的是T&，类似int&，直接对应于data数据
+	reference	operator*() const { return (*node).data; }//ref返回的是T&，类似int&，直接对应于data数据
 	//注意，如果我们node中的data是基本数据类型，则可以直接用*iter来访问，但如果我们的data也是一个结构体类型，那就需要用iter->
-	pointer		 operator->() const { return &(operator*()); }
+	pointer		operator->() const { return &(operator*()); }
 
 	//self是一个迭代器，而我们最终返回的就是本身，但我们令node=node->next，作为一次++操作
 	self&		operator++()//前缀，相当于++i
