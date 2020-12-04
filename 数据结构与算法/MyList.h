@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include<memory>
-#include<iostream>
 using namespace std;
 
 
@@ -38,7 +37,7 @@ struct _list_iterator
 
 	_list_iterator(link_type x) :node(x) {};
 	_list_iterator() {}
-	_list_iterator(const iterator& x) :node(x.node) {}
+	//_list_iterator(const self& x) :node(x.node) {}
 
 	bool		operator==(const self& x) const { return node == x.node; }//比较两个迭代器是否相等，只要比较所指节点是否一样
 	bool		operator!=(const self& x) const { return node != x.node; }

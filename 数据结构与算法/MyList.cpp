@@ -1,21 +1,30 @@
 #include "MyList.h"
+#include <iostream>
+
+struct test
+{
+	test(int& x) :t(x) { cout << "¹¹Ôì" << endl; }
+	int t;
+};
+
+test fun(int a)
+{
+	return a;
+}
 
 int main()
 {
-	MyList<int> list;
+	/*MyList<int> list;
 	for (int i = 0; i < 5; i++)
 	{
 		list.push_back(i);
 	}
-	auto iter = list.begin();
-	for (int i = 0; i < 5; i++)
-	{
-		cout << *iter << " ";
-		iter++;
-	}
-	/*for (auto iter = list.begin(); iter != list.end(); iter++)
+
+	for (auto iter = list.begin(); iter != list.end(); iter++)
 	{
 		cout << *iter << endl;
 	}*/
+
+	fun(1);
 	return 0;
 }
