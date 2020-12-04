@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include<memory>
 #include<iostream>
 using namespace std;
 
 
 //==============================
-//½Úµã
+//èŠ‚ç‚¹
 //==============================
 template<class T>
-struct __list_node
+struct _list_node
 {
 	typedef void*	void_pointer; 
 	void_pointer	prev;
@@ -17,51 +17,55 @@ struct __list_node
 };
 
 //==============================
-//listµü´úÆ÷
-//vectorÖĞµÄµü´úÆ÷ÆäÊµ¾ÍÊÇÒ»¸öÆÕÍ¨Ö¸Õë£¬ÒòÎªvector±¾ÖÊ¾ÍÊÇÊı×é£¬Ö¸ÕëµÄ++--ÒÑ¾­¿ÉÒÔÂú×ãÆäĞèÇó
-//µ«ÊÇlistÊÇË«ÏòÁ´±í£¬Ã¿¸ö½Úµã¶¼ÊÇÀëÉ¢µÄ£¬²»´¢´æÔÚÁ¬Ğø¿Õ¼äÄÚ£¬ËùÒÔÆäµü´úÆ÷±ØĞë¶îÍâÉè¼Æ
+//listè¿­ä»£å™¨
+//vectorä¸­çš„è¿­ä»£å™¨å…¶å®å°±æ˜¯ä¸€ä¸ªæ™®é€šæŒ‡é’ˆï¼Œå› ä¸ºvectoræœ¬è´¨å°±æ˜¯æ•°ç»„ï¼ŒæŒ‡é’ˆçš„++--å·²ç»å¯ä»¥æ»¡è¶³å…¶éœ€æ±‚
+//ä½†æ˜¯listæ˜¯åŒå‘é“¾è¡¨ï¼Œæ¯ä¸ªèŠ‚ç‚¹éƒ½æ˜¯ç¦»æ•£çš„ï¼Œä¸å‚¨å­˜åœ¨è¿ç»­ç©ºé—´å†…ï¼Œæ‰€ä»¥å…¶è¿­ä»£å™¨å¿…é¡»é¢å¤–è®¾è®¡
 //==============================
 template<class T>
-struct __list_iterator
+struct _list_iterator
 {
-	typedef __list_iterator<T>				self;//Ö¸ÏòÒ»¸öµü´úÆ÷
-	//STL¹æ·¶ËùÒªÇóµÄ5¸öÏàÓ¦ĞÍ±ğ
-	typedef bidirectional_iterator_tag		iterator_category; //µü´úÆ÷ÀàĞÍ
-	typedef T								value_type;//Êı¾İÀàĞÍ
+	typedef _list_iterator<T>				self;//æŒ‡å‘ä¸€ä¸ªè¿­ä»£å™¨
+	//STLè§„èŒƒæ‰€è¦æ±‚çš„5ä¸ªç›¸åº”å‹åˆ«
+	typedef bidirectional_iterator_tag		iterator_category; //è¿­ä»£å™¨ç±»å‹
+	typedef T								value_type;//æ•°æ®ç±»å‹
 	typedef T*								pointer;
 	typedef T&								reference;
-	typedef ptrdiff_t						difference_type;//Ò»°ãÓÃÓÚ¼ÇÂ¼Á½¸öµü´úÆ÷Ö®¼äµÄ¾àÀë
+	typedef ptrdiff_t						difference_type;//ä¸€èˆ¬ç”¨äºè®°å½•ä¸¤ä¸ªè¿­ä»£å™¨ä¹‹é—´çš„è·ç¦»
 
-	typedef __list_node<T>*					link_type; //Á´±íµÄ½Úµã	
+	typedef _list_node<T>*					link_type; //é“¾è¡¨çš„èŠ‚ç‚¹	
 
-	link_type								node; //½ÚµãÖ¸Õë
+	link_type								node; //èŠ‚ç‚¹æŒ‡é’ˆ
 
-	bool		 operator==(const self& x) const { return node == x.node; }//±È½ÏÁ½¸öµü´úÆ÷ÊÇ·ñÏàµÈ£¬Ö»Òª±È½ÏËùÖ¸½ÚµãÊÇ·ñÒ»Ñù
+	_list_iterator(link_type x) :node(x) {};
+	_list_iterator() {}
+	_list_iterator(const iterator& x) :node(x.node) {}
+
+	bool		 operator==(const self& x) const { return node == x.node; }//æ¯”è¾ƒä¸¤ä¸ªè¿­ä»£å™¨æ˜¯å¦ç›¸ç­‰ï¼Œåªè¦æ¯”è¾ƒæ‰€æŒ‡èŠ‚ç‚¹æ˜¯å¦ä¸€æ ·
 	bool		 operator!=(const self& x) const { return node != x.node; }
 
-	reference	 operator*() const { return (*node).data; }//ref·µ»ØµÄÊÇT&£¬ÀàËÆint&£¬Ö±½Ó¶ÔÓ¦ÓÚdataÊı¾İ
-	//×¢Òâ£¬Èç¹ûÎÒÃÇnodeÖĞµÄdataÊÇ»ù±¾Êı¾İÀàĞÍ£¬Ôò¿ÉÒÔÖ±½ÓÓÃ*iterÀ´·ÃÎÊ£¬µ«Èç¹ûÎÒÃÇµÄdataÒ²ÊÇÒ»¸ö½á¹¹ÌåÀàĞÍ£¬ÄÇ¾ÍĞèÒªÓÃiter->
+	reference	 operator*() const { return (*node).data; }//refè¿”å›çš„æ˜¯T&ï¼Œç±»ä¼¼int&ï¼Œç›´æ¥å¯¹åº”äºdataæ•°æ®
+	//æ³¨æ„ï¼Œå¦‚æœæˆ‘ä»¬nodeä¸­çš„dataæ˜¯åŸºæœ¬æ•°æ®ç±»å‹ï¼Œåˆ™å¯ä»¥ç›´æ¥ç”¨*iteræ¥è®¿é—®ï¼Œä½†å¦‚æœæˆ‘ä»¬çš„dataä¹Ÿæ˜¯ä¸€ä¸ªç»“æ„ä½“ç±»å‹ï¼Œé‚£å°±éœ€è¦ç”¨iter->
 	pointer		 operator->() const { return &(operator*()); }
 
-	//selfÊÇÒ»¸öµü´úÆ÷£¬¶øÎÒÃÇ×îÖÕ·µ»ØµÄ¾ÍÊÇ±¾Éí£¬µ«ÎÒÃÇÁînode=node->next£¬×÷ÎªÒ»´Î++²Ù×÷
-	self& operator++()//Ç°×º£¬Ïàµ±ÓÚ++i
+	//selfæ˜¯ä¸€ä¸ªè¿­ä»£å™¨ï¼Œè€Œæˆ‘ä»¬æœ€ç»ˆè¿”å›çš„å°±æ˜¯æœ¬èº«ï¼Œä½†æˆ‘ä»¬ä»¤node=node->nextï¼Œä½œä¸ºä¸€æ¬¡++æ“ä½œ
+	self&		operator++()//å‰ç¼€ï¼Œç›¸å½“äº++i
 	{
 		node = (link_type)((*node).next);
 		return *this;
 	}
-	//»¹ĞèÒª×¢ÒâµÄÊÇ£¬Ç°×º++ÎÒÃÇ·µ»ØµÄ¾ÍÊÇµü´úÆ÷±¾Éí£¬ºó×º++·µ»ØµÄÊÇµ±Ç°µü´úÆ÷++Ç°µÄ¿½±´£¬È»ºóµ±Ç°µü´úÆ÷Ò²»á++
-	self operator++(int)//ºó×º£¬Ïàµ±ÓÚi++(0)
+	//è¿˜éœ€è¦æ³¨æ„çš„æ˜¯ï¼Œå‰ç¼€++æˆ‘ä»¬è¿”å›çš„å°±æ˜¯è¿­ä»£å™¨æœ¬èº«ï¼Œåç¼€++è¿”å›çš„æ˜¯å½“å‰è¿­ä»£å™¨++å‰çš„æ‹·è´ï¼Œç„¶åå½“å‰è¿­ä»£å™¨ä¹Ÿä¼š++
+	self		operator++(int)//åç¼€ï¼Œç›¸å½“äºi++(0)
 	{
 		self temp = *this;
 		++* this;
 		return temp;
 	}
-	self& operator--()
+	self&		operator--()
 	{
 		node = (link_type)((*node).prev);
 		return *this;
 	}
-	self operator--(int)
+	self		operator--(int)
 	{
 		self temp = *this;
 		--* this;
@@ -70,23 +74,23 @@ struct __list_iterator
 };
 
 //==============================
-//ListÊµÏÖ
+//Listå®ç°
 //==============================
 template<class T>
 class MyList
 {
 protected:
-	typedef size_t				size_type;//´óĞ¡ÀàĞÍ
-	typedef T					value_type;//Êı¾İÀàĞÍ
+	typedef size_t				size_type;//å¤§å°ç±»å‹
+	typedef T					value_type;//æ•°æ®ç±»å‹
 	typedef T* pointer;
 	typedef T& reference;
 
-	typedef __list_iterator<T>	iterator;//µü´úÆ÷
-	typedef __list_node<T>		list_node;//±£´æÒ»¸ö½Úµã
-	typedef list_node*			link_type;//Ö¸Ïò½ÚµãµÄÖ¸Õë
+	typedef _list_iterator<T>	iterator;//è¿­ä»£å™¨
+	typedef _list_node<T>		_list_node;//ä¿å­˜ä¸€ä¸ªèŠ‚ç‚¹
+	typedef _list_node*			link_type;//æŒ‡å‘èŠ‚ç‚¹çš„æŒ‡é’ˆ
 
-	link_type					node;//±£´æµ±Ç°½Úµã
-	allocator<T>				alloc;//ÄÚ´æ·ÖÅäÆ÷
+	link_type					node;//ä¿å­˜å½“å‰èŠ‚ç‚¹
+	allocator<_list_node>		alloc;//å†…å­˜åˆ†é…å™¨
 public:
 	iterator	begin() { return (link_type)((*node).next); }
 	iterator	end() { return node; }
@@ -94,11 +98,11 @@ public:
 	size_type	size() const
 	{
 		size_type result = 0;
-		distance(begin(), end(), result);//È«¾Öº¯Êı£¬ÓÃÓÚ¼ÆËã¾àÀë
+		distance(begin(), end(), result);//å…¨å±€å‡½æ•°ï¼Œç”¨äºè®¡ç®—è·ç¦»
 	}
 	reference	front() { return *begin(); }//*iter=data
 	reference	back() { return *(--end()); }
-	//ÕâÊÇ²åÈëµ½positionÖ®Ç°µÄ
+	//è¿™æ˜¯æ’å…¥åˆ°positionä¹‹å‰çš„
 	iterator	insert(iterator position, const T& x)
 	{
 		link_type tmp = create_node(x);
@@ -125,17 +129,19 @@ public:
 		iterator tmp = end();
 		erase(--tmp);
 	}
+	void		clear();
+	void		remove(const T& value);
 protected:
-	link_type	get_node() { return alloc.allocate(); }//·ÖÅäÒ»¸önodeµÄÄÚ´æ£¬·µ»ØÖ¸Õë
-	void		put_node(link_type p) { alloc.deallocate(p); }//Ïú»ÙpÖ¸ÏòµÄnodeµÄ¿Õ¼ä
-	//¹¹ÔìÒ»¸önode
+	link_type	get_node() { return alloc.allocate(1); }//åˆ†é…ä¸€ä¸ªnodeçš„å†…å­˜ï¼Œè¿”å›æŒ‡é’ˆ
+	void		put_node(link_type p) { alloc.deallocate(p); }//é”€æ¯pæŒ‡å‘çš„nodeçš„ç©ºé—´
+	//æ„é€ ä¸€ä¸ªnode
 	link_type	create_node(const T& x)
 	{
 		link_type p = get_node();
 		alloc.construct(&p->data, x);
 		return p;
 	}
-	//Îö¹¹Ò»¸önode
+	//ææ„ä¸€ä¸ªnode
 	void		destroy_node(link_type p)
 	{
 		alloc.destroy(&p->data);
@@ -152,3 +158,34 @@ protected:
 public:
 	MyList() { empty_initialize(); }
 };
+
+template<class T>
+inline void MyList<T>::clear()
+{
+	link_type cur = (link_type)node->next;//begin()
+	while (cur != node)
+	{
+		link_type temp = cur;
+		cur = (link_type)cur->next;
+		destroy_node(temp);
+	}
+	node->next = node;
+	node->prev = node;
+}
+
+template<class T>
+inline void MyList<T>::remove(const T& value)
+{
+	iterator first = begin();
+	iterator last = end();
+	while (first != last)
+	{
+		iterator next = first;
+		++next;
+		if (*first == value)
+		{
+			erase(first);
+		}
+		first = next;
+	}
+}

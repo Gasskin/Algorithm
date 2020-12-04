@@ -1,25 +1,21 @@
 #include "MyList.h"
-#include<list>
-
-typedef struct
-{
-	int x;
-	int y;
-}Position;
 
 int main()
 {
-	list<Position> list;
+	MyList<int> list;
 	for (int i = 0; i < 5; i++)
 	{
-		Position p;
-		p.x = i;
-		p.y = i + 1;
-		list.push_back(p);
+		list.push_back(i);
 	}
-	for (auto iter = list.begin(); iter != list.end(); iter++)
+	auto iter = list.begin();
+	for (int i = 0; i < 5; i++)
 	{
-		cout << iter->y << " ";
+		cout << *iter << " ";
+		iter++;
 	}
+	/*for (auto iter = list.begin(); iter != list.end(); iter++)
+	{
+		cout << *iter << endl;
+	}*/
 	return 0;
 }
