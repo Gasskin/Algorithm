@@ -15,6 +15,7 @@ struct __list_node
 	void_pointer	next;
 	T				data;
 };
+
 //==============================
 //list迭代器
 //vector中的迭代器其实就是一个普通指针，因为vector本质就是数组，指针的++--已经可以满足其需求
@@ -71,7 +72,83 @@ struct __list_iterator
 //==============================
 //List实现
 //==============================
+template<class T>
 class MyList
 {
+protected:
+	typedef size_t				size_type;//大小类型
+	typedef T					value_type;//数据类型
+	typedef T* pointer;
+	typedef T& reference;
 
+	typedef __list_iterator<T>	iterator;//迭代器
+	typedef __list_node<T>		list_node;//保存一个节点
+	typedef list_node*			link_type;//指向节点的指针
+
+	link_type					node;//保存当前节点
+	allocator<T>				alloc;//内存分配器
+public:
+	iterator	begin() { return (link_type)((*node).next); }
+	iterator	end() { return node; }
+	bool		empty() const { return node->next == node; }
+	size_type	size() const
+	{
+		size_type result = 0;
+		distance(begin(), end(), result);//全局函数，用于计算距离
+	}
+	reference	front() { return *begin(); }//*iter=data
+	reference	back() { return *(--end()); }
+	//这是插入到position之前的
+	iterator	insert(iterator position, const T& x)
+	{
+		link_type tmp = create_node(x);
+		tmp->next = position.node;
+		tmp->prev = position.node->prev;
+		(link_type(position.node->prev))->next = tmp;
+		position.node->prev = tmp;
+		return tmp;
+	}
+	void		push_back(const T& x) { insert(end(), x); }
+	void		push_front(const T& x) { insert(begin(), x); }
+	iterator	erase(iterator position)
+	{
+		link_type next_node = link_type(position.node->next);
+		link_type prev_node = link_type(position.node->prev);
+		prev_node->next = next_node;
+		next_node->prev = prev_node;
+		destroy_node(position.node);
+		return iterator(next_node);
+	}
+	void		pop_front() { erase(begin()); }
+	void		pop_back()
+	{
+		iterator tmp = end();
+		erase(--tmp);
+	}
+protected:
+	link_type	get_node() { return alloc.allocate(); }//分配一个node的内存，返回指针
+	void		put_node(link_type p) { alloc.deallocate(p); }//销毁p指向的node的空间
+	//构造一个node
+	link_type	create_node(const T& x)
+	{
+		link_type p = get_node();
+		alloc.construct(&p->data, x);
+		return p;
+	}
+	//析构一个node
+	void		destroy_node(link_type p)
+	{
+		alloc.destroy(&p->data);
+		put_node(p);
+	}
+protected:
+	void		empty_initialize()
+	{
+		node = get_node();
+		node->prev = node;
+		node->next = node;
+	}
+
+public:
+	MyList() { empty_initialize(); }
 };
