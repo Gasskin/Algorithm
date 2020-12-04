@@ -3,17 +3,34 @@
 
 struct test
 {
-	test(int& x) :t(x) { cout << "构造" << endl; }
-	int t;
+	test(int x)
+	{ 
+		cout << "默认构造" << endl;
+	}
+	test(const test& t)
+	{
+		cout << "拷贝构造" << endl;
+	}
 };
 
-test fun(int a)
+test fun1(int a)
+{
+	return a;
+}
+
+test fun2(test a)
 {
 	return a;
 }
 
 int main()
 {
+	fun1(1);
+	cout << "=======" << endl;
+	test t(1);
+	cout << "=======" << endl;
+	fun2(t);
+
 	/*MyList<int> list;
 	for (int i = 0; i < 5; i++)
 	{
@@ -24,7 +41,6 @@ int main()
 	{
 		cout << *iter << endl;
 	}*/
-
-	fun(1);
+	
 	return 0;
 }
