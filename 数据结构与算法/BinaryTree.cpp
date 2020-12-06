@@ -1,6 +1,6 @@
 #include "BinaryTree.h"
 
-int main()
+int main_()
 {
 	BinaryTree tree;
 	tree.initTree();
