@@ -21,12 +21,18 @@
     <ClInclude Include="Heap.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Sorts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryTree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Heap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Sorts.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

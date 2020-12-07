@@ -10,14 +10,18 @@ public:
 	MaxHeap() { data.reserve(10); }
 public:
 	void init();
+	void init(int* arr,int len);
+	void init(vector<int> data);
 	void insert(int val);
 	void remove(int index);
 	void show();
+	void heapSort();
 private:
 	void floating(int index);
 	void sunking(int index);
 private:
 	vector<int> data;
+	vector<int> heap;
 };
 
 void MaxHeap::init()
@@ -29,6 +33,28 @@ void MaxHeap::init()
 		insert(val);
 		init();
 	}
+}
+
+void MaxHeap::init(int* arr, int len)
+{
+	if (len <= 0)
+	{
+		return;
+	}
+	int val = arr[len - 1];
+	insert(val);
+	init(arr, len - 1);
+}
+
+void MaxHeap::init(vector<int> data)
+{
+	if (data.empty())
+	{
+		return;
+	}
+	insert(data[data.size() - 1]);
+	data.pop_back();
+	init(data);
 }
 
 void MaxHeap::insert(int val)
@@ -89,13 +115,31 @@ void MaxHeap::floating(int index)
 
 void MaxHeap::sunking(int index)
 {
-	while (index < data.size() - 1)
+	while (index < (int)data.size() - 1)
 	{
 		//如果当前节点比左孩子小
 		if (data[index] < data[index * 2 + 1])
 		{
-			swap(data[index], data[index * 2 + 1]);
-			index = index * 2 + 1;
+			//如果同时还比右孩子小
+			if (data[index] < data[(index + 1) * 2])
+			{
+				//那就和较大的孩子交换
+				if (data[index * 2 + 1] > data[(index + 1) * 2])
+				{
+					swap(data[index], data[index * 2 + 1]);
+					index = index * 2 + 1;
+				}
+				else
+				{
+					swap(data[index], data[(index + 1) * 2]);
+					index = (index + 1) * 2;
+				}
+			}
+			else
+			{
+				swap(data[index], data[index * 2 + 1]);
+				index = index * 2 + 1;
+			}
 		}
 		//如果当前节点比右孩子小
 		else if (data[index] < data[(index + 1) * 2])
@@ -109,3 +153,4 @@ void MaxHeap::sunking(int index)
 		}
 	}
 }
+

@@ -1,9 +1,9 @@
-#include "BinaryTree.h"
-
-int main_()
-{
-	BinaryTree tree;
-	tree.initTree();
-	cout << tree.minDepth();
-	return 0;
-}
+//#include "BinaryTree.h"
+//
+//int main_0()
+//{
+//	BinaryTree tree;
+//	tree.initTree();
+//	cout << tree.minDepth();
+//	return 0;
+//}
