@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BalanceBinaryTree.h" />
     <ClInclude Include="BinarySearchTree.h" />
     <ClInclude Include="BinaryTree.h" />
     <ClInclude Include="Heap.h" />
     <ClInclude Include="Sorts.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BalanceBinaryTree.cpp" />
     <ClCompile Include="BinarySearchTree.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
     <ClCompile Include="Heap.cpp" />
