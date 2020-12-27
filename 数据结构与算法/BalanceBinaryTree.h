@@ -46,13 +46,19 @@ public:
 	void init();//初始化
 	void insert(int val);//插入数据
 	bool find(int val);//查找数据
+	
 	void PreorderTraversal() { _PreTraversal(root); cout << endl; }//前序遍历
 private:
 	void _insert(int val, node*& root);
+	void _PreTraversal(node* root);
 	void _cal_balance(node*& root);
 	int _cal_height(node*& root);
 	void _balance(node*& root, _INSERT_POS pos);
-	void _PreTraversal(node* root);
+	node* _find_father(int val, node*& root);
+	void _LL(node*& target);
+	void _RR(node*& target);
+	void _LR(node*& target);
+	void _RL(node*& target);
 private:
 	node* root;
 };
@@ -61,7 +67,7 @@ void BalanceBinaryTree::init()
 {
 	int val;
 	cin >> val;
-	if (val<=0)//结束条件
+	if (val<0)//结束条件
 	{
 		return;
 	}
@@ -86,6 +92,8 @@ void BalanceBinaryTree::insert(int val)
 	else
 	{
 		_insert(val, root);
+		PreorderTraversal();
+		cout << endl;
 	}
 }
 
@@ -169,35 +177,36 @@ void BalanceBinaryTree::_balance(node*& root, _INSERT_POS pos)
 	}
 	else
 	{
+		//说明右子树高
 		if (root->balance_val < 0)
 		{
-			//如果当前节点插入的是父节点的右侧，那就是RR
-			if (pos)
+			//如果右子树的右子树高，说明是RR导致的
+			if (root->right->balance_val < 0)
 			{
 #ifdef DEBUG
 				cout << boost::format("节点:%1% RR失衡") % root->data << endl;
 #endif
-				node* temp = root->right;
-				root->right = temp->left;
-				temp->left = root;
-				this->root = temp;
+				_LL(root);
 			}
-			//否则是RL
+			//否则是RL导致
 			else
 			{
 #ifdef DEBUG
 				cout << boost::format("节点:%1% RL失衡") % root->data << endl;
 #endif
+				_RL(root);
 			}
 		}
+		//否则是左子树高
 		else
 		{
-			//如果当前节点插入的是父节点的右侧，那就是LR
-			if (pos)
+			//如果左子树的右子树高，说明是RL
+			if (root->left->balance_val < 0)
 			{
 #ifdef DEBUG
 				cout << boost::format("节点:%1% LR失衡") % root->data << endl;
 #endif
+				_LR(root);
 			}
 			//否则是LL
 			else
@@ -205,12 +214,41 @@ void BalanceBinaryTree::_balance(node*& root, _INSERT_POS pos)
 #ifdef DEBUG
 				cout << boost::format("节点:%1% LL失衡") % root->data << endl;
 #endif
-				node* temp = root->left;
-				root->left = temp->right;
-				temp->right = root;
-				this->root = temp;
+				_RR(root);
 			}
 		}
+	}
+}
+
+node* BalanceBinaryTree::_find_father(int val, node*& root)
+{
+	//如果直接是首节点，那就返回nullptr
+	if (root->data == val)
+	{
+		return nullptr;
+	}
+	if (root->left != nullptr)
+	{
+		if (root->left->data == val)
+		{
+			return root;
+		}
+	}
+	if (root->right != nullptr)
+	{
+		if (root->right->data == val)
+		{
+			return root;
+		}
+	}
+
+	if (val > root->data)
+	{
+		_find_father(val, root->right);
+	}
+	else
+	{
+		_find_father(val, root->left);
 	}
 }
 
@@ -220,11 +258,81 @@ void BalanceBinaryTree::_PreTraversal(node* root)
 	{
 		return;
 	}
-#ifdef DEBUG
-	cout << boost::format("节点:%1% 平衡值:%2%") % root->data % root->balance_val << endl;
-#else
 	cout << root->data << " ";
-#endif
 	_PreTraversal(root->left);
 	_PreTraversal(root->right);
+}
+
+void BalanceBinaryTree::_LL(node*& target)
+{
+#ifdef DEBUG 
+	cout << boost::format("节点:%1% 左旋") % target->data << endl;
+#endif
+	node* temp = target->right;
+	target->right = temp->left;
+	temp->left = target;
+	
+	node* father = _find_father(target->data, root);
+	if (father != nullptr)
+	{
+		father->right = temp;
+	}
+	else
+	{
+		this->root = temp;
+	}
+}
+
+void BalanceBinaryTree::_RR(node*& target)
+{
+#ifdef DEBUG 
+	cout << boost::format("节点:%1% 右旋") % target->data << endl;
+#endif
+	node* temp = target->left;
+	target->left = temp->right;
+	temp->right = target;
+
+	node* father = _find_father(target->data, root);
+	if (father != nullptr)
+	{
+		father->left = temp;
+	}
+	else
+	{
+		this->root = temp;
+	}
+}
+
+void BalanceBinaryTree::_LR(node*& target)
+{
+	node* leftChild = target->left;
+	node* input = leftChild->right;
+	leftChild->right = input->left;
+	input->left = leftChild;
+	target->left = input;
+
+	target->left = input->right;
+	input->left = target;
+	node* father = _find_father(target->data, root);
+	if (father != nullptr)
+	{
+		father->left = input;
+	}
+}
+
+void BalanceBinaryTree::_RL(node*& target)
+{
+	node* rightChild = target->right;
+	node* input = rightChild->left;
+	rightChild->left = input->right;
+	input->right = rightChild;
+	target->right = input;
+	
+	target->right = input->left;
+	input->left = target;
+	node* father = _find_father(target->data, root);
+	if (father != nullptr)
+	{
+		father->right = input;
+	}
 }
