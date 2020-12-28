@@ -24,12 +24,18 @@ static int _CUR_POS = 0;
 //=========================================================
 typedef struct node
 {
-	node(int val) :data(val), left(nullptr), right(nullptr), father(nullptr), balance_val(0) {}
-
+	node(int val) :data(val), left(nullptr), right(nullptr), balance_val(0) {}
+	~node()
+	{
+#ifdef DEBUG
+		cout << "析构节点:" << data << endl;
+#endif
+		delete left;
+		delete right;
+	}
 	int data;
 	node* left;
 	node* right;
-	node* father;//多加一个父节点指针
 	int balance_val;//当前节点的最大子树高度
 }node;
 
@@ -46,14 +52,15 @@ public:
 	void init();//初始化
 	void insert(int val);//插入数据
 	bool find(int val);//查找数据
-	
+	void remove(int val);//删除数据
 	void PreorderTraversal() { _PreTraversal(root); cout << endl; }//前序遍历
 private:
 	void _insert(int val, node*& root);
+	void _remove(int val, node*& root);
 	void _PreTraversal(node* root);
 	void _cal_balance(node*& root);
 	int _cal_height(node*& root);
-	void _balance(node*& root, _INSERT_POS pos);
+	void _balance(node*& root);
 	node* _find_father(int val, node*& root);
 	void _LL(node*& target);
 	void _RR(node*& target);
@@ -118,6 +125,61 @@ bool BalanceBinaryTree::find(int val)
 	return false;
 }
 
+void BalanceBinaryTree::remove(int val)
+{
+	if (!find(val))
+	{
+#ifdef DEBUG
+        cout << "没有找到" << val << endl;
+#endif
+		return;
+	}
+	_remove(val, root);
+}
+
+//删除操作参考搜索树，大致思路相同
+void BalanceBinaryTree::_remove(int val, node*& root)
+{
+	if (root->data > val)
+	{
+		_remove(val, root->left);
+		_cal_balance(root);
+		_balance(root);
+	}
+	else if (root->data < val)
+	{
+		_remove(val, root->right);
+		_cal_balance(root);
+		_balance(root);
+	}
+	else
+	{
+		if (root->left != nullptr && root->right != nullptr)
+		{
+			node* temp = root->right;
+			while (temp->left != nullptr)
+			{
+				temp = temp->left;
+			}
+			root->data = temp->data;
+			_remove(temp->data, root->right);
+		}
+		else
+		{
+			node* temp = root;
+			if (root->left != nullptr)
+			{
+				root = root->left;
+			}
+			else
+			{
+				root = root->right;
+			}
+			delete temp;
+		}
+	}
+}
+
 void BalanceBinaryTree::_insert(int val, node*& root)
 {
 	if (root == nullptr)
@@ -133,17 +195,15 @@ void BalanceBinaryTree::_insert(int val, node*& root)
 	{
 		if (val > (root->data))
 		{
-			_CUR_POS = _RIGHT;
 			_insert(val, root->right);
 			_cal_balance(root);
-			_balance(root, _CUR_POS);
+			_balance(root);
 		}
 		else
 		{
-			_CUR_POS = _LEFT;
 			_insert(val, root->left);
 			_cal_balance(root);
-			_balance(root, _CUR_POS);
+			_balance(root);
 		}
 	}
 }
@@ -166,7 +226,7 @@ int BalanceBinaryTree::_cal_height(node*& root)
 	return max(left, right);
 }
 
-void BalanceBinaryTree::_balance(node*& root, _INSERT_POS pos)
+void BalanceBinaryTree::_balance(node*& root)
 {
 	if (root->balance_val >= -1 && root->balance_val <= 1)
 	{

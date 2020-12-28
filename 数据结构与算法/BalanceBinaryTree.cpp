@@ -4,7 +4,7 @@ int main()
 {
 	BalanceBinaryTree tree;
 	tree.init();
-	cout << endl << "Ç°Ðò±éÀú:" << endl;
+	tree.remove(1);
 	tree.PreorderTraversal();
 	return 0;
 }
