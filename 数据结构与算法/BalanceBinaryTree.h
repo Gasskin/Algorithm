@@ -11,12 +11,6 @@ using namespace std;
 //元素不可重复
 //=========================================================
 
-//用一个static变量来记录当前节点插入的是父节点的左边还是右边，进而判断失衡情况
-//如果是root的话可以随便填写，默认是0
-typedef int _INSERT_POS;
-const int _LEFT = 0;
-const int _RIGHT = 1;
-static int _CUR_POS = 0;
 
 //=========================================================
 //节点
@@ -80,7 +74,6 @@ void BalanceBinaryTree::init()
 	}
 	else
 	{
-		_CUR_POS = 0;
 		insert(val);
 		init();
 	}
